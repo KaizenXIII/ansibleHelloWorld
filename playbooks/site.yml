@@ -1,0 +1,6 @@
+---
+- name: Run Hello World
+  hosts: localhost
+  gather_facts: true
+  roles:
+    - hello_world

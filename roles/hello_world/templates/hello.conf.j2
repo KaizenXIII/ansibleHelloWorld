@@ -1,0 +1,13 @@
+# {{ output_file }}
+# Managed by {{ managed_by }} - Do not edit manually
+
+[application]
+name = {{ app_name }}
+version = {{ app_version }}
+environment = {{ environment_name }}
+
+[message]
+greeting = {{ hello_message }}
+host = {{ ansible_hostname }}
+os = {{ ansible_os_family }}
+generated = {{ ansible_date_time.iso8601 }}

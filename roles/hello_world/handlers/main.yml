@@ -1,0 +1,4 @@
+---
+- name: config changed
+  ansible.builtin.debug:
+    msg: "Config file was updated at {{ output_dir }}/{{ output_file }}"

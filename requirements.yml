@@ -1,0 +1,13 @@
+---
+# Ansible Galaxy dependencies
+# Add roles and collections here as needed
+#
+# roles:
+#   - name: geerlingguy.docker
+#     version: "7.1.0"
+#
+# collections:
+#   - name: community.general
+#     version: "9.0.0"
+
+collections: []

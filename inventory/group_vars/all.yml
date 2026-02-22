@@ -1,0 +1,6 @@
+---
+# Global variables shared across all hosts
+
+app_name: "Ansible Hello World"
+app_version: "1.0.0"
+environment_name: "development"

@@ -1,0 +1,6 @@
+---
+# Default variables (lowest priority, easily overridden)
+
+hello_message: "Hello from Ansible!"
+output_dir: "/tmp/ansible-hello-world"
+output_file: "hello.conf"

@@ -1,0 +1,31 @@
+---
+- name: Print hello message
+  ansible.builtin.debug:
+    msg: "{{ hello_message }} ({{ app_name }} v{{ app_version }})"
+
+- name: Print environment info
+  ansible.builtin.debug:
+    msg: "Running on {{ ansible_hostname }} | OS: {{ ansible_os_family }} | Env: {{ environment_name }}"
+
+- name: Create output directory
+  ansible.builtin.file:
+    path: "{{ output_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Generate config from template
+  ansible.builtin.template:
+    src: hello.conf.j2
+    dest: "{{ output_dir }}/{{ output_file }}"
+    mode: "0644"
+  notify: config changed
+
+- name: Verify generated file
+  ansible.builtin.command:
+    cmd: "cat {{ output_dir }}/{{ output_file }}"
+  register: file_contents
+  changed_when: false
+
+- name: Show generated config
+  ansible.builtin.debug:
+    msg: "{{ file_contents.stdout_lines }}"

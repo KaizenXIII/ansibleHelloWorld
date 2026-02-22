@@ -1,0 +1,4 @@
+---
+# Role variables (higher priority than defaults)
+
+managed_by: "Ansible"
