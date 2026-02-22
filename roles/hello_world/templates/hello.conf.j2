@@ -8,6 +8,6 @@ environment = {{ environment_name }}
 
 [message]
 greeting = {{ hello_message }}
-host = {{ ansible_hostname }}
-os = {{ ansible_os_family }}
-generated = {{ ansible_date_time.iso8601 }}
+host = {{ ansible_facts['hostname'] }}
+os = {{ ansible_facts['os_family'] }}
+generated = {{ ansible_facts['date_time']['iso8601'] }}
