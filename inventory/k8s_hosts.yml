@@ -1,0 +1,6 @@
+all:
+  children:
+    k8s_nodes:
+      hosts:
+        k8s-hello-world-control-plane:
+          ansible_connection: community.docker.docker

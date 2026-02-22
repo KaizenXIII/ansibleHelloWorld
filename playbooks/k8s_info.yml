@@ -1,0 +1,64 @@
+---
+- name: Gather info from Kind K8s nodes
+  hosts: k8s_nodes
+  gather_facts: true
+  tasks:
+    - name: Display node OS info
+      ansible.builtin.debug:
+        msg: >-
+          Hostname: {{ ansible_facts['hostname'] }} |
+          OS: {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }} |
+          Kernel: {{ ansible_facts['kernel'] }} |
+          Arch: {{ ansible_facts['architecture'] }}
+
+    - name: Display memory info
+      ansible.builtin.debug:
+        msg: >-
+          Total RAM: {{ ansible_facts['memtotal_mb'] }} MB |
+          Free RAM: {{ ansible_facts['memfree_mb'] }} MB
+
+    - name: Display CPU info
+      ansible.builtin.debug:
+        msg: >-
+          CPUs: {{ ansible_facts['processor_vcpus'] }} |
+          Cores: {{ ansible_facts['processor_cores'] }}
+
+    - name: List running K8s pods (via crictl)
+      ansible.builtin.command:
+        cmd: crictl pods
+      register: pods_output
+      changed_when: false
+
+    - name: Show running pods
+      ansible.builtin.debug:
+        msg: "{{ pods_output.stdout_lines }}"
+
+    - name: List running containers (via crictl)
+      ansible.builtin.command:
+        cmd: crictl ps
+      register: containers_output
+      changed_when: false
+
+    - name: Show running containers
+      ansible.builtin.debug:
+        msg: "{{ containers_output.stdout_lines }}"
+
+    - name: Check disk usage
+      ansible.builtin.command:
+        cmd: df -h /
+      register: disk_output
+      changed_when: false
+
+    - name: Show disk usage
+      ansible.builtin.debug:
+        msg: "{{ disk_output.stdout_lines }}"
+
+    - name: Check kubelet status
+      ansible.builtin.command:
+        cmd: systemctl is-active kubelet
+      register: kubelet_status
+      changed_when: false
+
+    - name: Show kubelet status
+      ansible.builtin.debug:
+        msg: "Kubelet is {{ kubelet_status.stdout }}"
