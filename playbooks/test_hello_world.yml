@@ -1,0 +1,34 @@
+---
+- name: Write TestHelloWorld file to ops user home
+  hosts: docker_nodes
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Ensure ops user exists
+      ansible.builtin.user:
+        name: ops
+        shell: /bin/bash
+        create_home: true
+
+    - name: Write TestHelloWorld file
+      ansible.builtin.copy:
+        content: |
+          Hello World from AWX!
+          Deployed at: {{ ansible_date_time.iso8601 }}
+          Target node: {{ ansible_facts['hostname'] }}
+          Triggered by CI/CD pipeline
+        dest: /home/ops/TestHelloWorld
+        owner: ops
+        group: ops
+        mode: "0644"
+
+    - name: Verify file was created
+      ansible.builtin.command:
+        cmd: cat /home/ops/TestHelloWorld
+      register: file_output
+      changed_when: false
+
+    - name: Show file contents
+      ansible.builtin.debug:
+        msg: "{{ file_output.stdout_lines }}"
