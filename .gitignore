@@ -4,3 +4,7 @@ __pycache__/
 .vagrant/
 *.log
 .env
+
+# Fleet state snapshots
+fleet/saved-states/*.tar.gz
+fleet/docker-compose.override.yml

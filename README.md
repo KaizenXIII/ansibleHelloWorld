@@ -41,6 +41,11 @@ ansibleHelloWorld/
 │   ├── kustomization.yaml               # AWX Operator kustomization
 │   ├── awx-instance.yaml                # AWX instance definition
 │   └── Dockerfile.target-node           # SSH-enabled target node image
+├── fleet/
+│   ├── docker-compose.yml               # Fleet IaC definition (6 nodes)
+│   ├── fleet.sh                         # Fleet CLI (up/down/save/restore)
+│   ├── Dockerfiles/                     # Per-role Dockerfiles
+│   └── saved-states/                    # Saved fleet snapshots
 ├── .github/workflows/
 │   └── trigger-awx.yml                  # CI/CD: trigger AWX on push
 ├── requirements.yml                     # Galaxy dependencies
@@ -75,6 +80,28 @@ See [docs/awx-setup.md](docs/awx-setup.md) for full AWX deployment instructions.
 ./awx-deploy/configure-awx.sh
 ```
 
+## Fleet (Local Dev Environment)
+
+See [docs/fleet.md](docs/fleet.md) for full fleet documentation.
+
+```bash
+# Start the fleet (6 Docker nodes: web x2, app x2, db, lb)
+./fleet/fleet.sh up
+
+# Check status
+./fleet/fleet.sh status
+
+# Configure all nodes via Ansible
+ansible-playbook -i inventory/fleet_hosts.yml playbooks/fleet_configure.yml
+
+# Save state for later
+./fleet/fleet.sh save my-snapshot
+
+# Destroy and restore from snapshot
+./fleet/fleet.sh destroy
+./fleet/fleet.sh restore my-snapshot
+```
+
 ## CI/CD Pipeline
 
 See [docs/cicd-pipeline.md](docs/cicd-pipeline.md) for pipeline details.
@@ -93,6 +120,10 @@ The pipeline triggers automatically when changes are pushed to `playbooks/`, `ro
 | `k8s_info.yml` | Gathers OS, memory, CPU, pod, and disk info from K8s nodes |
 | `configure_node.yml` | Configures Docker nodes via SSH (MOTD, packages, users, timezone) |
 | `test_hello_world.yml` | Deploys a test file to Docker node for pipeline validation |
+| `fleet_configure.yml` | Master fleet playbook (baseline + role-specific config) |
+| `fleet_web.yml` | Web tier: nginx index page, start nginx |
+| `fleet_app.yml` | App tier: deploy sample Python app |
+| `fleet_db.yml` | DB tier: initialize PostgreSQL |
 
 ## Common Commands
 
