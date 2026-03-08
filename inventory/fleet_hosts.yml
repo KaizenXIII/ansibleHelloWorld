@@ -17,26 +17,26 @@ all:
             fleet-web-02:
               ansible_host: 127.0.0.1
               ansible_port: 2202
-              kind_ip: 172.19.0.9
+              kind_ip: 172.19.0.5
         fleet_app:
           hosts:
             fleet-app-01:
               ansible_host: 127.0.0.1
               ansible_port: 2203
-              kind_ip: 172.19.0.8
+              kind_ip: 172.19.0.10
             fleet-app-02:
               ansible_host: 127.0.0.1
               ansible_port: 2204
-              kind_ip: 172.19.0.10
+              kind_ip: 172.19.0.8
         fleet_db:
           hosts:
             fleet-db-01:
               ansible_host: 127.0.0.1
               ansible_port: 2205
-              kind_ip: 172.19.0.7
+              kind_ip: 172.19.0.9
         fleet_lb:
           hosts:
             fleet-lb-01:
               ansible_host: 127.0.0.1
               ansible_port: 2206
-              kind_ip: 172.19.0.5
+              kind_ip: 172.19.0.7
