@@ -41,8 +41,10 @@
         create_home: true
 
     - name: Set timezone to UTC
-      community.general.timezone:
-        name: UTC
+      ansible.builtin.command:
+        cmd: timedatectl set-timezone UTC
+      changed_when: true
+      failed_when: false
 
     - name: Verify configuration
       ansible.builtin.command:
