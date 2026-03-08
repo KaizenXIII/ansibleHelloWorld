@@ -1,0 +1,40 @@
+---
+- name: Configure app tier
+  hosts: fleet_app
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Create application directory
+      ansible.builtin.file:
+        path: /opt/app
+        state: directory
+        mode: "0755"
+
+    - name: Deploy sample app
+      ansible.builtin.copy:
+        content: |
+          #!/usr/bin/env python3
+          """Sample application managed by AWX."""
+          import json
+          import datetime
+
+          app_info = {
+              "name": "fleet-app",
+              "node": "{{ inventory_hostname }}",
+              "version": "1.0.0",
+              "deployed_at": str(datetime.datetime.now(datetime.timezone.utc)),
+          }
+          print(json.dumps(app_info, indent=2))
+        dest: /opt/app/main.py
+        mode: "0755"
+
+    - name: Verify app runs
+      ansible.builtin.command:
+        cmd: python3 /opt/app/main.py
+      register: app_output
+      changed_when: false
+
+    - name: Show app output
+      ansible.builtin.debug:
+        msg: "{{ app_output.stdout }}"

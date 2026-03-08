@@ -1,0 +1,8 @@
+---
+fleet_env: development
+fleet_managed_by: awx
+fleet_baseline_packages:
+  - curl
+  - vim
+  - net-tools
+  - htop

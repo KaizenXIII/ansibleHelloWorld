@@ -1,0 +1,44 @@
+---
+- name: Configure all fleet nodes (baseline)
+  hosts: fleet
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Display node info
+      ansible.builtin.debug:
+        msg: >-
+          Node: {{ inventory_hostname }} |
+          OS: {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }} |
+          Groups: {{ group_names | join(', ') }}
+
+    - name: Install baseline packages
+      ansible.builtin.apt:
+        name: "{{ fleet_baseline_packages }}"
+        state: present
+        update_cache: true
+
+    - name: Set MOTD
+      ansible.builtin.copy:
+        content: |
+          ==========================================
+          Fleet Node: {{ inventory_hostname }}
+          Role: {{ group_names | select('match', 'fleet_') | first | default('unknown') }}
+          Environment: {{ fleet_env }}
+          Managed by: {{ fleet_managed_by }}
+          Last configured: {{ ansible_date_time.iso8601 }}
+          ==========================================
+        dest: /etc/motd
+        mode: "0644"
+
+    - name: Create ops user
+      ansible.builtin.user:
+        name: ops
+        shell: /bin/bash
+        groups: sudo
+        append: true
+        create_home: true
+
+- import_playbook: fleet_web.yml
+- import_playbook: fleet_app.yml
+- import_playbook: fleet_db.yml

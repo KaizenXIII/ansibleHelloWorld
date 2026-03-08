@@ -1,0 +1,28 @@
+---
+- name: Configure web tier
+  hosts: fleet_web
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Create default nginx index page
+      ansible.builtin.copy:
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head><title>{{ inventory_hostname }}</title></head>
+          <body>
+            <h1>{{ inventory_hostname }}</h1>
+            <p>Fleet web node managed by AWX</p>
+            <p>Last deployed: {{ ansible_date_time.iso8601 }}</p>
+          </body>
+          </html>
+        dest: /var/www/html/index.html
+        mode: "0644"
+
+    - name: Ensure nginx is running
+      ansible.builtin.command:
+        cmd: nginx
+      register: nginx_start
+      changed_when: nginx_start.rc == 0
+      failed_when: false

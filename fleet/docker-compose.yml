@@ -1,0 +1,75 @@
+x-common: &common
+  restart: unless-stopped
+  networks:
+    - kind
+    - fleet
+
+services:
+  fleet-web-01:
+    <<: *common
+    build:
+      context: ./Dockerfiles
+      dockerfile: Dockerfile.web
+    container_name: fleet-web-01
+    hostname: fleet-web-01
+    ports:
+      - "2201:22"
+      - "8081:80"
+
+  fleet-web-02:
+    <<: *common
+    build:
+      context: ./Dockerfiles
+      dockerfile: Dockerfile.web
+    container_name: fleet-web-02
+    hostname: fleet-web-02
+    ports:
+      - "2202:22"
+      - "8082:80"
+
+  fleet-app-01:
+    <<: *common
+    build:
+      context: ./Dockerfiles
+      dockerfile: Dockerfile.app
+    container_name: fleet-app-01
+    hostname: fleet-app-01
+    ports:
+      - "2203:22"
+
+  fleet-app-02:
+    <<: *common
+    build:
+      context: ./Dockerfiles
+      dockerfile: Dockerfile.app
+    container_name: fleet-app-02
+    hostname: fleet-app-02
+    ports:
+      - "2204:22"
+
+  fleet-db-01:
+    <<: *common
+    build:
+      context: ./Dockerfiles
+      dockerfile: Dockerfile.db
+    container_name: fleet-db-01
+    hostname: fleet-db-01
+    ports:
+      - "2205:22"
+
+  fleet-lb-01:
+    <<: *common
+    build:
+      context: ./Dockerfiles
+      dockerfile: Dockerfile.lb
+    container_name: fleet-lb-01
+    hostname: fleet-lb-01
+    ports:
+      - "2206:22"
+      - "8080:80"
+
+networks:
+  kind:
+    external: true
+  fleet:
+    driver: bridge

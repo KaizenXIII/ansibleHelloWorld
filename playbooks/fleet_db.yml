@@ -1,0 +1,32 @@
+---
+- name: Configure database tier
+  hosts: fleet_db
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Ensure PostgreSQL data directory exists
+      ansible.builtin.file:
+        path: /var/lib/postgresql/15/main
+        state: directory
+        owner: postgres
+        group: postgres
+        mode: "0700"
+
+    - name: Initialize PostgreSQL if needed
+      ansible.builtin.command:
+        cmd: pg_createcluster 15 main --start
+      register: pg_init
+      changed_when: "'already exists' not in pg_init.stderr"
+      failed_when: false
+
+    - name: Ensure PostgreSQL is running
+      ansible.builtin.command:
+        cmd: pg_isready
+      register: pg_status
+      changed_when: false
+      failed_when: false
+
+    - name: Show PostgreSQL status
+      ansible.builtin.debug:
+        msg: "PostgreSQL status: {{ pg_status.stdout | default('not ready') }}"
