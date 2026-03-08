@@ -1,0 +1,55 @@
+---
+- name: Configure Docker target node
+  hosts: docker_nodes
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Display target node info
+      ansible.builtin.debug:
+        msg: >-
+          Hostname: {{ ansible_facts['hostname'] }} |
+          OS: {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }} |
+          Arch: {{ ansible_facts['architecture'] }}
+
+    - name: Ensure /etc/motd is configured
+      ansible.builtin.copy:
+        content: |
+          ==========================================
+          Managed by AWX - Do not edit manually
+          Node: {{ ansible_facts['hostname'] }}
+          Last configured: {{ ansible_date_time.iso8601 }}
+          ==========================================
+        dest: /etc/motd
+        mode: "0644"
+
+    - name: Install baseline packages
+      ansible.builtin.apt:
+        name:
+          - curl
+          - vim
+          - net-tools
+        state: present
+        update_cache: true
+
+    - name: Create ops user
+      ansible.builtin.user:
+        name: ops
+        shell: /bin/bash
+        groups: sudo
+        append: true
+        create_home: true
+
+    - name: Set timezone to UTC
+      community.general.timezone:
+        name: UTC
+
+    - name: Verify configuration
+      ansible.builtin.command:
+        cmd: cat /etc/motd
+      register: motd_output
+      changed_when: false
+
+    - name: Show result
+      ansible.builtin.debug:
+        msg: "{{ motd_output.stdout_lines }}"
